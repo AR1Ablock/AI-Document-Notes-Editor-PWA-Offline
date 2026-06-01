@@ -30,10 +30,12 @@ import { Paste } from "./Paste_Drag_Drop_Handler";
 import Suggestion from '@tiptap/suggestion'
 import tippy from 'tippy.js'
 import 'tippy.js/dist/tippy.css'
+import TurndownService from "turndown";
 
 //
 import { all, createLowlight } from 'lowlight'                    // ← Import ALL languages
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import { AiRichBlock } from "./Media_Custom_Tiptap_Node/custom_visiual_block_schema";
 
 // Create lowlight instance with ALL languages (required for auto-detect)
 
@@ -1101,6 +1103,7 @@ export const Tiptap_Editor = new Editor({
     }),
     Columns,
     Column,
+    AiRichBlock,
     ExtendedTextStyle,          // ← use this instead of plain TextStyle
     FontSize,
     LineHeight,
@@ -1331,8 +1334,11 @@ export const commands = {
   // now make method for copy content to clipboard.
   copyContentToClipboard: async () => {
     try {
-      const htmlContent = Tiptap_Editor.getText();
-      await navigator.clipboard.writeText(htmlContent);
+      let tiptap_html = Tiptap_Editor.view.dom.innerHTML;
+      let tiptap_text = Tiptap_Editor.view.dom.innerText;
+      let tds = new TurndownService();
+      const tiptap_markdown = tds.turndown(tiptap_html);
+      await Clipboard_Copy({ md: tiptap_markdown, html: tiptap_html });
       // add successfull copy content emoji to message as well to make it good looking
       Show_Create_Edit_Model_Warning('✅ Content copied to clipboard! 📋', 2000);
     } catch (error) {
@@ -1376,6 +1382,47 @@ export const commands = {
   insertHR: () => Tiptap_Editor.chain().focus().setHorizontalRule().run(),
   insertHardBreak: () => Tiptap_Editor.chain().focus().setHardBreak().run(),
 };
+
+
+
+
+async function Clipboard_Copy({ md, html }) {
+  const formats = {};
+
+  // text/plain ALWAYS contains markdown
+  formats["text/plain"] = new Blob([md], { type: "text/plain" });
+
+  // Add markdown only if supported
+  if (navigator.clipboard?.supports?.("text/markdown")) {
+    formats["text/markdown"] = new Blob([md], { type: "text/markdown" });
+  }
+
+  // Add HTML only if supported
+  if (navigator.clipboard?.supports?.("text/html")) {
+    formats["text/html"] = new Blob([html], { type: "text/html" });
+  }
+
+  try {
+    const item = new ClipboardItem(formats);
+    await navigator.clipboard.write([item]);
+    return true;
+  } catch (err) {
+    console.warn("ClipboardItem failed, falling back", err);
+
+    // Fallback: plain text only (markdown)
+    const ta = document.createElement("textarea");
+    ta.value = md;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+
+    return false;
+  }
+}
+
 
 
 // In your 'selectionUpdate' handler or as a standalone function

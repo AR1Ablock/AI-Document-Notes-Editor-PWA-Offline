@@ -101,7 +101,7 @@ export function resize_lenis_scroll_On_media_Adition(e) {
         const el = e.target;
         if (
             ["IMG", "VIDEO", "AUDIO", "IFRAME", "OBJECT"].includes(el.tagName) ||
-            el.closest(".override_media_position_in_live_editor")
+            el.closest(".override_media_position_in_live_editor") || el.closest(".ai-rich-block")
         ) {
             editorLenis.resize();
         }

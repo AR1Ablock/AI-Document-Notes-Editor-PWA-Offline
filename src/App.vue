@@ -372,9 +372,9 @@
     <draggable @change="onDraggableChange" v-model="visibleNotes" item-key="id" class="card_con"
       :class="[{ active: Blur_Background_WhileOpening_Note }, { Screen_load_animation_end: Loading_screen_end_then_animate_notes_card_con }]">
       <!-- Cards --> <template #item="{ element, index }">
-        <div class="card_wrapper" :key="element.id || index" :data-id="element.id">
-          <div :style="{ 'background-color': element.Card_Para_Color }" class="cards"
-            :ref="el => { if (el) Card.push(el) }" :key="element.id + sort_order"
+        <div class="card_wrapper" :ref="el => { if (el) Card.push(el) }" :key="element.id || index"
+          :data-id="element.id">
+          <div :style="{ 'background-color': element.Card_Para_Color }" class="cards" :key="element.id + sort_order"
             :class="[{ smoothhide: element.isCardGoingDeleted }, { disable_Card_While_Saving: element.IsLoading }]"
             :data-id="index">
             <div class="Title_Con">
@@ -1640,7 +1640,9 @@
               <!-- Choice Dialog -->
               <div v-if="Show_Choice_Dialog" class="style-dialog">
                 <h2>Select Source</h2>
-                <button class="option" @click="chooseSource('local')">
+
+                <button class="option" @click="chooseSource('local')"
+                  :disabled="(Is_AI_Edit_Starte || OCR_Processing || isRecording)">
                   <div class="select_file_source_wrapper">
                     <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                       <!-- frame -->
@@ -1665,7 +1667,8 @@
                   </div>
                 </button>
 
-                <button class="option" @click="chooseSource('online')">
+                <button class="option" @click="chooseSource('online')"
+                  :disabled="(Is_AI_Edit_Starte || OCR_Processing || isRecording)">
                   <div class="select_file_source_wrapper">
                     <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                       <!-- frame -->
@@ -1688,7 +1691,8 @@
                   </div>
                 </button>
 
-                <button :disabled="OCR_Processing" class="option ocr" @click="chooseSource('OCR')">
+                <button :disabled="Is_AI_Edit_Started || OCR_Processing || isRecording" class="option ocr"
+                  @click="chooseSource('OCR')">
                   <div class="select_file_source_wrapper">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512" fill="none">
                       <!-- Scan Corners -->
@@ -1726,7 +1730,7 @@
                 <h2>Select Media Type</h2>
 
                 <button class="option" @click="chooseType('audio')">
-                  <span>
+                  <div class="select_file_source_wrapper">
                     <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                       <!-- frame -->
                       <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#FFD700" stroke-width="4" />
@@ -1757,11 +1761,11 @@
                       </g>
                     </svg>
                     <span> Audio </span>
-                  </span>
+                  </div>
                 </button>
 
                 <button class="option" @click="chooseType('video')">
-                  <span>
+                  <div class="select_file_source_wrapper">
                     <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                       <!-- frame -->
                       <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#FFD700" stroke-width="4" />
@@ -1777,11 +1781,11 @@
                       </g>
                     </svg>
                     <span> Video </span>
-                  </span>
+                  </div>
                 </button>
 
                 <button class="option" @click="chooseType('image')">
-                  <span>
+                  <div class="select_file_source_wrapper">
                     <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                       <!-- frame -->
                       <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#FFD700" stroke-width="4" />
@@ -1799,11 +1803,11 @@
                       </g>
                     </svg>
                     <span> Image </span>
-                  </span>
+                  </div>
                 </button>
 
                 <button class="option" @click="chooseType('document')">
-                  <span>
+                  <div class="select_file_source_wrapper">
                     <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                       <!-- frame -->
                       <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#FFD700" stroke-width="4" />
@@ -1827,7 +1831,7 @@
                     </svg>
 
                     <span> Document </span>
-                  </span>
+                  </div>
                 </button>
               </div>
 
@@ -2107,7 +2111,7 @@
             <div class="ai-bar-content">
               <div class="ai-status">
                 <span class="ai-dot"></span>
-                <span class="ai-text">AI is generating...</span>
+                <span class="ai-text">{{ AI_Generation_Status }}</span>
               </div>
 
               <button @click="Stop_AI_Generation" class="stop-button">
@@ -3474,7 +3478,8 @@
               <!-- Choice Dialog -->
               <div v-if="Show_Choice_Dialog" class="style-dialog">
                 <h2>Select Source</h2>
-                <button class="option" @click="chooseSource('local')">
+                <button class="option" @click="chooseSource('local')"
+                  :disabled="Is_AI_Edit_Started || OCR_Processing || isRecording">
                   <div class="select_file_source_wrapper">
                     <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                       <!-- frame -->
@@ -3499,7 +3504,8 @@
                   </div>
                 </button>
 
-                <button class="option" @click="chooseSource('online')">
+                <button class="option" @click="chooseSource('online')"
+                  :disabled="Is_AI_Edit_Started || OCR_Processing || isRecording">
                   <div class="select_file_source_wrapper">
                     <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                       <!-- frame -->
@@ -3522,7 +3528,8 @@
                   </div>
                 </button>
 
-                <button :disabled="OCR_Processing" class="option ocr" @click="chooseSource('OCR')">
+                <button :disabled="Is_AI_Edit_Started || OCR_Processing || isRecording" class="option ocr"
+                  @click="chooseSource('OCR')">
                   <div class="select_file_source_wrapper">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 512 512" fill="none">
                       <!-- Scan Corners -->
@@ -3560,7 +3567,7 @@
                 <h2>Select Media Type</h2>
 
                 <button class="option" @click="chooseType('audio')">
-                  <span>
+                  <div class="select_file_source_wrapper">
                     <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                       <!-- frame -->
                       <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#FFD700" stroke-width="4" />
@@ -3591,11 +3598,11 @@
                       </g>
                     </svg>
                     <span> Audio </span>
-                  </span>
+                  </div>
                 </button>
 
                 <button class="option" @click="chooseType('video')">
-                  <span>
+                  <div class="select_file_source_wrapper">
                     <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                       <!-- frame -->
                       <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#FFD700" stroke-width="4" />
@@ -3611,11 +3618,11 @@
                       </g>
                     </svg>
                     <span> Video </span>
-                  </span>
+                  </div>
                 </button>
 
                 <button class="option" @click="chooseType('image')">
-                  <span>
+                  <div class="select_file_source_wrapper">
                     <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                       <!-- frame -->
                       <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#FFD700" stroke-width="4" />
@@ -3633,11 +3640,11 @@
                       </g>
                     </svg>
                     <span> Image </span>
-                  </span>
+                  </div>
                 </button>
 
                 <button class="option" @click="chooseType('document')">
-                  <span>
+                  <div class="select_file_source_wrapper">
                     <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
                       <!-- frame -->
                       <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#FFD700" stroke-width="4" />
@@ -3661,7 +3668,7 @@
                     </svg>
 
                     <span> Document </span>
-                  </span>
+                  </div>
                 </button>
               </div>
 
@@ -3976,7 +3983,7 @@
             <div class="ai-bar-content">
               <div class="ai-status">
                 <span class="ai-dot"></span>
-                <span class="ai-text">AI is generating...</span>
+                <span class="ai-text">{{ AI_Generation_Status }}</span>
               </div>
 
               <button @click="Stop_AI_Generation" class="stop-button">
@@ -4411,8 +4418,9 @@
           </section>
 
           <div class="View_Text_In_UI View_Text_In_UI_Title" v-html="SendNoteForView_Title"></div>
-          <div ref="Note_View_UI_Text_Element" style="padding-bottom: clamp(2rem, 8vw, 5rem);"
-            class="Read_only_mode View_Text_In_UI" v-html="SendNoteForView_Message"></div>
+          <div ref="Note_View_UI_Text_Element" :key="Reset_RO_View_Text_UI"
+            style="padding-bottom: clamp(2rem, 8vw, 5rem);" class="Read_only_mode View_Text_In_UI"
+            v-html="SendNoteForView_Message"></div>
           <!-- view ui closing btn -->
           <button class="btn close_note_create_edit_btn" @click="CloseBtn(null)" title="Close"
             style="position: absolute; bottom: 0; z-index: 100;">
@@ -4819,6 +4827,8 @@ import {
   Editor_Media_Adding_Parser,
   runAnimation,
   Animation_Smoother_For_Edit_And_View_Mode,
+  Animate_Visiual_Block_View,
+  run_visiual_block_animation,
   Clear_Editor_KeyPress_Media_Selection,
   Opening_note_In_view_mode_completed,
 } from "./components/Editor_Live_Media_Adding_Parser";
@@ -4858,7 +4868,8 @@ import {
   Is_AI_Edit_Started,
   Stop_AI_Generation,
   Open_dialog,
-  applyPrompt
+  applyPrompt,
+  AI_Generation_Status
 } from './components/AI_Feature'
 //
 import { EditorContent } from "@tiptap/vue-3"; // The component
@@ -4906,6 +4917,7 @@ import { getRealFileInfo } from './components/File_Type_Checker';
 import { Handle_OCR, OCR_Processing, OCR_Status, Stop_OCR } from './components/OCR';
 import { currentTimeDisplay, isPlaying, playbackRate, playbackRate_Speeds, seek, Show_TTS_Player, stopEverything, Toggle_Playback_dropdown, togglePause } from './components/Text_To_Speech';
 import { toggleDropdown, isDropdownAnimation, menuVisible, isDropdownOpen, languages, isRecording, status, selectedLang, handleMicTapped, selectLanguage, fullyCloseSTT, toggle_prompt_Dropdown, Is_prompt_dropdown_open, Is_prompt_dropdown_animate, fully_close_prompt_STT } from './components/Speech_To_Text';
+import { Render_Read_Mode_Charts } from './components/Media_Custom_Tiptap_Node/custom_visiual_block_view'
 // .................................... All Variables .........................................
 
 
@@ -6182,7 +6194,7 @@ function hyperClean() {
 // Lowers opacity of media elements inside the provided container.
 function fadeOutMediaElements() {
   try {
-    const classes = ["video", "img", "audio", "document"];
+    const classes = ["video", "img", "audio", "document", "ai-rich-block"];
     classes.forEach((className) => {
       Note_View_UI_Text_Element.value.querySelectorAll(`.${className}`).forEach((el) => (el.style.opacity = 0));
     });
@@ -6225,7 +6237,8 @@ function Stop_All_Playing_Media(Source) {
 
 // --- Main Close & Cleanup Function ---
 
-let pendingCloseTimeout = null;           // ← NEW (cancellable)
+let pendingCloseTimeout = null;
+let Reset_RO_View_Text_UI = ref(0)           // ← NEW (cancellable)
 
 async function CloseBtn(original = "note_making") {
   try {
@@ -6260,7 +6273,7 @@ async function CloseBtn(original = "note_making") {
         pendingCloseTimeout = null;
       }
 
-      let View_UI_Has_Media = Note_View_UI_Text_Element.value.querySelectorAll("video, audio, img, .video, .audio, .img, .document").length;
+      let View_UI_Has_Media = Note_View_UI_Text_Element.value.querySelectorAll("video, audio, img, .video, .audio, .img, .document, .ai-rich-block").length;
       console.log("Closing UI form");
       if (
         (SendImageForView && SendImageForView.length) ||
@@ -6278,6 +6291,7 @@ async function CloseBtn(original = "note_making") {
           SendNoteForView_Title.value = null;
           SendNoteForView_Message.value = null;
           pendingCloseTimeout = null;
+          ++Reset_RO_View_Text_UI.value;
         }, 400);
         Close_Btn_Sound.play();
       } else {
@@ -6288,6 +6302,7 @@ async function CloseBtn(original = "note_making") {
           SendNoteForView_Title.value = null;
           SendNoteForView_Message.value = null;
           pendingCloseTimeout = null;
+          ++Reset_RO_View_Text_UI.value;
         }, 400);
         Close_Btn_Sound.play();
       }
@@ -7381,6 +7396,10 @@ function FrontCamVideoRec() {
     if (document.activeElement) {
       document.activeElement.blur();
     }
+    if (Is_AI_Edit_Started.value || OCR_Processing.value || isRecording.value) {
+      Show_Create_Edit_Model_Warning("Please Wait Until AI Process Is Finished.", 3000);
+      return;
+    }
     startVideoRecording("user");
     Front_Back_Camera.value = !Front_Back_Camera.value;
     /* Close_Video_Audio_Preview(); */
@@ -7395,6 +7414,12 @@ function BackCamVideoRec() {
     if (document.activeElement) {
       document.activeElement.blur();
     }
+
+    if (Is_AI_Edit_Started.value || OCR_Processing.value || isRecording.value) {
+      Show_Create_Edit_Model_Warning("Please Wait Until AI Process Is Finished.", 3000);
+      return;
+    }
+
     startVideoRecording("environment");
     Front_Back_Camera.value = !Front_Back_Camera.value;
     /* Close_Video_Audio_Preview(); */
@@ -7410,6 +7435,12 @@ function AudioRec() {
     if (document.activeElement) {
       document.activeElement.blur();
     }
+
+    if (Is_AI_Edit_Started.value || OCR_Processing.value || isRecording.value) {
+      Show_Create_Edit_Model_Warning("Please Wait Until AI Process Is Finished.", 3000);
+      return;
+    }
+
     if (!Is_Audio_Recording.value) {
       Front_Back_Camera.value = false;
       startAudioRecording();
@@ -8200,7 +8231,7 @@ async function handleTextFileInsertion(selectedFile) {
 
   // ── 1. HARD LIMIT ─────────────────────────────────────────────
   if (selectedFile.size > MAX_TEXT_SIZE_HARD) {
-    Show_Create_Edit_Model_Warning(`Text File Too Large, Attach as Document instead?`, 6000);
+    Show_Create_Edit_Model_Warning(`Text File Too Large, Attach as Document instead!`, 6000);
     return { success: true, action: "offer_as_document" };
   }
 
@@ -8475,6 +8506,8 @@ function RO_View_Mode_Array_And_Links_Cleaner() {
   }
 }
 
+
+
 let Opening_note_In_view_mode_progressing = ref(false);
 
 async function RO_ViewNotePage(id) {
@@ -8506,14 +8539,17 @@ async function RO_ViewNotePage(id) {
     Html_String = data.value[index].userWroteHtml;
     Html_String = make_checkbox_readonly(Html_String);
     SendNoteForView_Message.value = Animation_Smoother_For_Edit_And_View_Mode(
-      Html_String
+      Animate_Visiual_Block_View(Html_String)
     );
+    change_text_alignment();
+    
     IsRoViewNoteOpen.value = true;
     /*     await new Promise(r => requestAnimationFrame(r)); */
-    await new Promise((resolve) => setTimeout(resolve, 400));
+    await new Promise((resolve) => setTimeout(resolve, 450));
     data.value[index].IsLoading = false;
     if (Toggle_Reading_Form_Full_Screen.value)
       document.body.classList.add("disable_body_scroll_on_note_full_screen");
+
 
     RO_View_Mode_Pull_Decompressed_Media_From_Index_DB = await Get_Media_from_Db(data.value[index].id);
 
@@ -8522,13 +8558,21 @@ async function RO_ViewNotePage(id) {
       Final_Media_Embedded_Html_String = await handleViewMode(Html_String, RO_View_Mode_Pull_Decompressed_Media_From_Index_DB);
       SendNoteForView_Message.value = Animation_Smoother_For_Edit_And_View_Mode(Final_Media_Embedded_Html_String);
       //
+
+
+      await new Promise(r => requestAnimationFrame(r));
+      Render_Read_Mode_Charts(Note_View_UI_Text_Element.value);
+      await new Promise(r => requestAnimationFrame(r));
+      //900000
       await nextTick();
       //
       mediaElements = Array.from(Note_View_UI_Text_Element.value.querySelectorAll("img, video, audio"));
       Opening_note_In_view_mode_completed.value = true;
       await Promise.all(mediaElements.map(el => runAnimation(el, true)));
       //
+
       if (viewLenis) viewLenis.resize();
+      View_Note_Page_UI.value.focus();
 
       // Clean up the decompressed media object to free memory
       const mediaArrays = ["ImageFile", "AudioFiles", "VideoFiles", "DocumentFiles"];
@@ -8547,10 +8591,19 @@ async function RO_ViewNotePage(id) {
     } else {
       await nextTick();
 
+      mediaElements = Array.from(Note_View_UI_Text_Element.value.querySelectorAll(".ai-rich-block"));
+      await Promise.all(mediaElements.map(el => run_visiual_block_animation(el)));
+
+      await new Promise(r => requestAnimationFrame(r));
+      Render_Read_Mode_Charts(Note_View_UI_Text_Element.value);
+      await new Promise(r => requestAnimationFrame(r));
+
       // for online media if local is no found in array.
       mediaElements = Array.from(Note_View_UI_Text_Element.value.querySelectorAll("img, video, audio"));
       Opening_note_In_view_mode_completed.value = true;
       await Promise.all(mediaElements.map(el => runAnimation(el, true)));
+
+      await new Promise((resolve) => setTimeout(resolve, 400));
 
       if (viewLenis) viewLenis.resize();
       View_Note_Page_UI.value.focus();
@@ -9544,7 +9597,8 @@ function SearchBtnLogic() {
     let notesFound = false; // Flag to check if any notes match
 
     if (Card.value) {
-      Card.value.forEach((card) => {
+      Card.value.forEach((card_wrapper) => {
+        let card = card_wrapper.children[0];
         if (card) {
           let title = card.children[0].firstChild.textContent.toLowerCase().trim();
           let description = card.children[1].firstChild.textContent.toLowerCase().trim();

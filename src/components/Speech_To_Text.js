@@ -4,7 +4,7 @@ import { Is_AI_Edit_Started, prompt_dialog_input_ref, prompt_input } from './AI_
 import { OCR_Processing } from './OCR';
 
 
-const apiKey = ref('xxx'); // Replace with your key
+const apiKey = ref('Wam1ZmbcAnWTGCa4KxqxtQSrj3yGUOh5'); // Replace with your key
 export const isRecording = ref(false);
 export const status = ref('Idle'); // Idle, Connecting, Listening, Error
 export const selectedLang = ref('en');

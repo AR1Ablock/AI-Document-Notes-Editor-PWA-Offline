@@ -296,6 +296,34 @@ export function Remove_Video_Overlay(event) {
     }
 }
 
+
+export function Animate_Visiual_Block_View(html,) {
+    try {
+        let temp = document.createElement("div");
+        temp.innerHTML = html;
+        temp.querySelectorAll(".ai-rich-block").forEach((el) => {
+            if (!el) return;
+            el.style.opacity = 0;
+            el.style.transform = 'scale(0)';
+            el.style.transition = "all 0.3s ease";
+        });
+        return temp.innerHTML;
+    }
+    catch (error) {
+        debugError(error, 'Animate_Visiual_Block_View'
+        )
+    }
+}
+
+
+export function run_visiual_block_animation(el) {
+    el.style.opacity = 1;
+    el.style.transform = 'scale(1)';
+    el.style.transition = "all 0.3s ease";
+}
+
+
+
 export function Animation_Smoother_For_Edit_And_View_Mode(html) {
     try {
 
@@ -478,7 +506,7 @@ async function lazyLoadWithAnimation(el, openingNoteInViewMode = false) {
             //
             if (abort_Controller()) await new Promise((resolve) => setTimeout(resolve, 1000));
         }
-        if(openingNoteInViewMode) await waitForFlag(Opening_note_In_view_mode_completed); // Wait for the flag to be true before proceeding with the animation
+        if (openingNoteInViewMode) await waitForFlag(Opening_note_In_view_mode_completed); // Wait for the flag to be true before proceeding with the animation
         await new Promise(r => requestAnimationFrame(r));
         //
         el.style.display = 'block';
@@ -503,7 +531,7 @@ async function lazyLoadWithAnimation(el, openingNoteInViewMode = false) {
             }
         }
         if (timer)
-        clearTimeout(timer);
+            clearTimeout(timer);
         timer = setTimeout(() => {
             if (editorLenis)
                 editorLenis.resize(); // resize lenis scrollbar after add media so it add media height to its scroll bar.
@@ -517,29 +545,29 @@ async function lazyLoadWithAnimation(el, openingNoteInViewMode = false) {
 
 
 function waitForFlag(flagRef) {
-  return new Promise((resolve) => {
-    // 1. Already true? Resolve immediately
-    if (flagRef.value === true) {
-      console.log('✅ Flag was already true')
-      resolve()
-      return
-    }
-
-    console.log('⏳ Waiting for flag to become true...')
-
-    // 2. Watch for change
-    const stop = watch(
-      flagRef,
-      (newValue) => {
-        if (newValue === true) {
-          console.log('✅ Flag became true → proceeding')
-          stop()           // ← critical: prevent memory leak
-          resolve()
+    return new Promise((resolve) => {
+        // 1. Already true? Resolve immediately
+        if (flagRef.value === true) {
+            console.log('✅ Flag was already true')
+            resolve()
+            return
         }
-      },
-      { immediate: false }   // we already checked initial value
-    )
-  })
+
+        console.log('⏳ Waiting for flag to become true...')
+
+        // 2. Watch for change
+        const stop = watch(
+            flagRef,
+            (newValue) => {
+                if (newValue === true) {
+                    console.log('✅ Flag became true → proceeding')
+                    stop()           // ← critical: prevent memory leak
+                    resolve()
+                }
+            },
+            { immediate: false }   // we already checked initial value
+        )
+    })
 }
 
 

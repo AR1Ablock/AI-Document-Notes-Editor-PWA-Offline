@@ -5,7 +5,7 @@ import DOMPurify from 'dompurify';
 import { editorLenis } from './Scroll_Logic'
 import { Show_Create_Edit_Model_Warning } from "./TipTap_Editor";
 import { Tiptap_Editor } from "./TipTap_Editor";
-
+import TurndownService from "turndown";
 
 async function Web_Image_pasting_handler(cd, manageMedia_method) {
     try {
@@ -124,6 +124,7 @@ export async function Paste(cd, manageMedia_method, event) {
 
     Paste_Procssing.value = true;
 
+
     try {
 
         if (cd.files && cd.files.length > 0) {
@@ -136,8 +137,11 @@ export async function Paste(cd, manageMedia_method, event) {
         const text = cd.getData("text/plain") || "";
 
         if (!html && !md && !text) {
+            Show_Create_Edit_Model_Warning("Nothing to paste.", 3000);
             return; // nothing else to do
         }
+
+        await new Promise(r => setTimeout(r, 40));
 
         // NEW: Fix malformed HTML using DOMParser (if html is present)
         if (html) {
@@ -146,6 +150,9 @@ export async function Paste(cd, manageMedia_method, event) {
             html = doc.body.innerHTML;  // This outputs the repaired HTML
         }
 
+        let Is_Valid = ValidatePasteLimits(html, md, text);
+
+        if (!Is_Valid) return;
 
         console.log('\n@@@@@@@@@\nRaw Text: ' + text + '\n@@@@@@@@@@\nRaw Markdown: ' + md + '\n@@@@@@\nRaw Html: ' + html + '\n@@@@@@@@@');
 
@@ -170,7 +177,7 @@ export async function Paste(cd, manageMedia_method, event) {
         console.log('\nFinal Inserted Html: ' + final_html + '\n');
 
         Tiptap_Editor.chain().insertContent(final_html).focus().run();
-        if(editorLenis) {
+        if (editorLenis) {
             editorLenis.resize();
         }
 
@@ -181,6 +188,43 @@ export async function Paste(cd, manageMedia_method, event) {
         Paste_Procssing.value = false;
     }
 }
+
+
+export function ValidatePasteLimits(html = "", md = "", text = "") {
+
+    let maxLines = 6500;
+    let temp_md = "";
+
+    // HTML -> Markdown
+    if (html && html.trim().length > 4) {
+        let md_to_html = new TurndownService();
+        const html_md = md_to_html.turndown(html);
+        temp_md += html_md;
+    }
+    // Existing markdown
+    if (md && md.trim().length > 0) {
+        if (temp_md.length > 0) temp_md += "\n\n";
+        temp_md += md;
+    }
+    // Plain text
+    if (text && text.trim().length > 0) {
+        if (temp_md.length > 0) temp_md += "\n\n";
+        temp_md += text;
+    }
+
+    temp_md = temp_md.trim();
+    const md_lines = temp_md.length > 0 ? temp_md.split('\n').length : 0;
+    console.log("Pasted Lines: ", + md_lines);
+
+    // Line limit
+    if (md_lines > maxLines) {
+        Show_Create_Edit_Model_Warning(`Paste exceeds limit. (Max ${maxLines} Lines are allowed).`, 5000);
+        return false;
+    }
+    return true;
+}
+
+
 
 
 function Enforce_Dynamic_Max_Font_Size_For_Too_Large_Elemtns(el) {

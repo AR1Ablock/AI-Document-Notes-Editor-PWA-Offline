@@ -356,7 +356,7 @@ body {
 
 @media (max-width: 1800px) {
   .Screen_load_animation_end {
-    margin: clamp(2rem, 4vw, 5rem) 0 0 0 !important;
+    transform: translateY(clamp(2rem, 4vw, 5rem)) !important;
   }
 }
 
@@ -378,7 +378,7 @@ body {
 
 @media (max-width: 1000px) {
   .Screen_load_animation_end {
-    margin: clamp(2rem, 5vw, 5rem) 0 0 0 !important;
+    transform: translateY(clamp(2rem, 5vw, 5rem)) !important;
   }
 }
 
@@ -395,7 +395,7 @@ body {
 @media (max-width: 768px) {
 
   .Screen_load_animation_end {
-    margin: clamp(2rem, 6vw, 5rem) 0 0 0 !important;
+    transform: translateY(clamp(2.5rem, 6vw, 5rem)) !important;
   }
 
   .delete-modal {
@@ -939,9 +939,9 @@ body {
 
 .Screen_load_animation_end {
   opacity: 1 !important;
-  margin: clamp(2rem, 3vw, 5rem) 0 0 0;
+  transform: translateY(clamp(2rem, 3vw, 5rem));
   transition-timing-function: ease;
-  transition: opacity .4s, margin .6s;
+  transition: opacity .4s, transform .6s;
 }
 
 .card_con {
@@ -1386,7 +1386,22 @@ body .link_input_btns button {
   letter-spacing: 1px;
   font-style: italic;
   user-select: none;
+  border: none;
+  animation: pulsing 1.5s ease-in-out infinite;
 }
+
+@keyframes pulsing{
+
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
 
 .loader {
   position: relative;
@@ -3030,7 +3045,7 @@ figure figcaption {
   justify-content: center !important;
 }
 
-.option.ocr:disabled {
+.style-dialog .option:disabled {
   background: #555 !important;
   cursor: not-allowed !important;
   color: #888 !important;
@@ -3112,10 +3127,11 @@ figure figcaption {
 
 /* Inner HR visual */
 hr {
-  display: block;
-  height: 2px;
-  background: #887300;
-  border: none;
+  display: block !important;
+  height: 2px !important;
+  background: #887300 !important;
+  border: none !important;
+  padding: 0 !important;
 }
 
 
@@ -6140,7 +6156,7 @@ input[type=number]::-moz-focus-inner {
 .tts-controls {
   display: flex;
   align-items: center;
-  gap: clamp(5px, 1.2vw, 12px);
+  gap: clamp(8px, .5vw, 12px) !important;
   flex-shrink: 1;
   flex-wrap: nowrap;
 }
@@ -6850,4 +6866,96 @@ input[type=number]::-moz-focus-inner {
 .close-x:active {
   transform: scale(0.8);
   transition: all 0.1s ease;
+}
+
+/* custom visual nodes */
+
+.ai-rich-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto !important;
+  background-color: blanchedalmond !important;
+  width: 80%;
+  height: fit-content;
+}
+
+.ai-rich-block[data-type="chart"] {
+  height: 60vh !important;
+  min-height: 20vh !important;
+  max-height: 100vh !important;
+
+  width: 80% !important;
+  min-width: 20vw !important;
+  max-width: 80vw !important;
+}
+
+.ai-rich-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.ai-rich-content svg,
+.ai-rich-content canvas {
+  padding: .3rem .5rem !important;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+@media (max-width: 800px) {
+
+  .ai-rich-block {
+    width: 95% !important;
+    height: fit-content !important;
+  }
+
+  .ai-rich-block[data-type="chart"] {
+    max-width: 100vw !important;
+    height: fit-content !important;
+    max-height: 100vh !important;
+  }
+}
+
+@media (max-width: 650px) {
+
+  .ai-rich-block[data-type="chart"] {
+    height: 50vh !important;
+  }
+}
+
+
+
+
+.visiual_block_straming_text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: clamp(.6rem, 2vw, 2.5rem);
+}
+
+
+/* Hide mermaid bomb icon. */
+
+/* Hide the bomb icon paths */
+.error-icon {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Hide the error text labels */
+.error-text {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Hide entire SVGs marked as error */
+svg[aria-roledescription="error"] {
+  display: none !important;
+  visibility: hidden !important;
 }
