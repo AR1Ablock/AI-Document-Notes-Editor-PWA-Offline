@@ -1,4 +1,4 @@
-# StickyNotes Premium 📒✨  
+# AI Sticky Document Notes PWA 📒✨  
 
 ![Demo](demo.gif) *A quick demo of creating a note with video recording and file attachments*  
 
