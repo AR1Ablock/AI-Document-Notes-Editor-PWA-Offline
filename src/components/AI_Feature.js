@@ -13,7 +13,7 @@ import { editorLenis } from './Scroll_Logic';
 export const Bubble_Menu = ref([
     { action: "Improve", loading: false, content: "Just Enhance the clarity, meaning, understandable grammar and style of the content and NO MORE!." },
     { action: "Correct", loading: false, content: "Just Correct the grammar, spelling, punctuation, sentence structure, while preserving the original meaning and tone. No MORE!" },
-    { action: "Simplify", loading: false, content: "Just Correct the grammar, spelling, punctuation, sentence structure, and Simplify the content and ALL its jargon to make it very well understandable while preserving the original meaning and tone. No MORE!" },
+    { action: "Simplify", loading: false, content: "Just Correct the grammar, spelling, punctuation, sentence structure, and Aggressively Simplify the content and if there is a complex word then find its simple synonym or meaning with make sure to simplify ALL its jargon to make it very well understandable while preserving the original meaning and tone. No MORE!" },
     { action: "Summery", loading: false, content: "Condense the selected content into a brief summary." },
     { action: "Detailed", loading: false, content: "Expand the selected content with more depth and explanation." },
     { action: "Shorten", loading: false, content: "Make the selected content more concise while keeping meaning intact." },
@@ -30,13 +30,20 @@ export let AI_Generation_Status = ref('AI is generating...');
 
 
 export const shouldShowBubbleMenu = ({ editor, state, from, to }) => {
-    // Only show the menu if there is a non-empty selection
     const { empty } = state.selection;
+    if (empty) return false;
 
-    // Check if the selected range is purely text instead of media or empty space
-    const isText = editor.state.doc.textBetween(from, to).length > 0;
+    const selectedText = editor.state.doc.textBetween(from, to).trim();
+    if (selectedText.length === 0) return false;
 
-    return !empty && isText && !OCR_Processing.value; // Don't show during OCR processing;
+    if (OCR_Processing.value) return false;
+
+    // Check if we're inside any table-related node
+    const isInTable = editor.isActive('table') ||
+        editor.isActive('tableCell') ||
+        editor.isActive('tableHeader');
+
+    return !isInTable;
 };
 
 
@@ -53,11 +60,11 @@ export const bubbleMenuOptions = {
 
 export let Show_prompt_input_dialog = ref(false);
 export let prompt_dialog_input_ref = ref();
-export let prompt_input = ref(null);
+export let prompt_input = ref('');
 
 
 
-export let mistral_api_key = "xyz"
+export let mistral_api_key = "wthlMib6XYQ7HJ5UXDtw5eRMWuOt79jj"
 
 
 const AI_SYSTEM_PROMPT = `
@@ -551,7 +558,7 @@ export async function Modify_By_AI(Apply) {
             if (!Is_Response_An_image.value) Apply.loading = false;
             // === IMPORTANT: Process rich blocks ===
             editor.setEditable(wasEditable);
-            prompt_input.value = null;
+            prompt_input.value = '';
             AI_in_progress.value = false;
             Is_AI_Edit_Started.value = false;
             if (editorLenis) editorLenis.resize();

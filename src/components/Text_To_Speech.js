@@ -2,7 +2,7 @@
 import { ref, onBeforeUnmount } from 'vue';
 import { Show_Create_Edit_Model_Warning } from './TipTap_Editor';
 
-const apiKey = ref('xyz');
+const apiKey = ref('Wam1ZmbcAnWTGCa4KxqxtQSrj3yGUOh5');
 export const text = ref('');
 const isLoading = ref(false);
 const statusMessage = ref('Idle');

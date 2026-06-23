@@ -4398,22 +4398,36 @@
                 </svg>
               </button>
 
-              <button class="btn" @click="exportNoteAsPdf" title="Download as PDF">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <!-- PDF Document Icon -->
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#2A2A2A" stroke-width="2"
-                    stroke-linecap="round" stroke-linejoin="round" fill="none" />
-                  <polyline points="14 2 14 8 20 8" stroke="#2A2A2A" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                  <!-- PDF Text -->
-                  <text x="8" y="16" font-family="Arial" font-size="6" font-weight="bold" fill="#2A2A2A">
-                    PDF
-                  </text>
-                  <!-- Download Arrow -->
-                  <path d="M12 19v-6m-3 3l3 3 3-3" stroke="#2A2A2A" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
-              </button>
+              <!-- App.vue: PDF export (replace existing pdf-export-menu block) -->
+              <div class="pdf-export-menu" ref="pdfBtnRef">
+                <button class="btn pdf-main-btn" @click="togglePdfMenu" title="Export as PDF">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- PDF Document Icon -->
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="#2A2A2A"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                    <polyline points="14 2 14 8 20 8" stroke="#2A2A2A" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                    <text x="8" y="16" font-family="Arial" font-size="6" font-weight="bold" fill="#2A2A2A">PDF</text>
+                    <path d="M12 19v-6m-3 3l3 3 3-3" stroke="#2A2A2A" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+
+              <teleport to="body">
+                <div v-if="pdfMenuOpen" class="pdf-submenu" :style="pdfSubmenuStyle" ref="pdfSubRef" @click.stop>
+                  <button class="pdf-sub-btn" @click="exportNoteAsPdf(true); closePdfMenu()"
+                    title="Print with white background">
+                    <span class="sub-icon">⚪</span> White Print
+                  </button>
+                  <button class="pdf-sub-btn" @click="exportNoteAsPdf(false); closePdfMenu()"
+                    title="Print with dark background">
+                    <span class="sub-icon">⚫</span> Black Print
+                  </button>
+                </div>
+              </teleport>
+
+
             </div>
           </section>
 
@@ -5174,7 +5188,65 @@ const scheduleClose = useToggleTimer();
 // ALL Methods
 //////////////////////////////////////////////////////////////////////////////////////////
 
+const pdfMenuOpen = ref(false);
+const pdfBtnRef = ref(null);
+const pdfSubRef = ref(null);
+const pdfSubmenuStyle = ref({ position: 'absolute', top: '0px', left: '0px', zIndex: 20050 });
 
+function closePdfMenu() {
+  pdfMenuOpen.value = false;
+}
+
+async function togglePdfMenu(e) {
+  pdfMenuOpen.value = !pdfMenuOpen.value;
+  if (pdfMenuOpen.value) {
+    await nextTick();
+    positionPdfSubmenu();
+    // close on outside click
+    document.addEventListener('click', outsidePdfClick);
+    window.addEventListener('resize', closePdfMenu);
+    window.addEventListener('scroll', positionPdfSubmenu, { passive: true });
+  } else {
+    cleanupPdfListeners();
+  }
+}
+
+function positionPdfSubmenu() {
+  const btn = pdfBtnRef.value;
+  const sub = pdfSubRef.value;
+  if (!btn || !sub) return;
+  const rect = btn.getBoundingClientRect();
+  // place submenu under the button, but keep in viewport
+  const top = rect.bottom + 6 + window.scrollY;
+  let left = rect.right - sub.offsetWidth + window.scrollX;
+  // clamp to viewport
+  if (left + sub.offsetWidth > window.scrollX + window.innerWidth - 8) {
+    left = window.scrollX + window.innerWidth - sub.offsetWidth - 8;
+  }
+  if (left < window.scrollX + 8) left = window.scrollX + 8;
+  pdfSubmenuStyle.value.top = `${top}px`;
+  pdfSubmenuStyle.value.left = `${left}px`;
+  pdfSubmenuStyle.value.position = 'absolute';
+  pdfSubmenuStyle.value.zIndex = 20050;
+}
+
+function outsidePdfClick(e) {
+  if (!pdfSubRef.value?.contains(e.target) && !pdfBtnRef.value?.contains(e.target)) {
+    closePdfMenu();
+    cleanupPdfListeners();
+  }
+}
+
+function cleanupPdfListeners() {
+  document.removeEventListener('click', outsidePdfClick);
+  window.removeEventListener('resize', closePdfMenu);
+  window.removeEventListener('scroll', positionPdfSubmenu);
+}
+
+// cleanup on unmount
+onBeforeUnmount(() => {
+  cleanupPdfListeners();
+});
 
 
 // ==================== FILTER STATE ====================
@@ -5522,6 +5594,7 @@ const startDelete = (wsId) => {
 
 const cancelConfirm = () => {
   confirmingId.value = null;
+  Toggle_WorkSpace_Delete_Confirmation.value = false;
 }
 
 let Toggle_WorkSpace_Delete_Confirmation = ref(false);
@@ -5653,8 +5726,13 @@ async function Create_Edit_Note_By_WorkSpace(id, Its_Edit_Mode = false) {
     else
       tempSelectedWorkspaceId.value = null
 
-    if (Its_Edit_Mode && data.value[index]?.SubGroupId)
+    if (Its_Edit_Mode && data.value[index]?.SubGroupId) {
       tempSelectedSubgroup.value = data.value[index].SubGroupId;
+
+      const ws = workspaces.value.find(w => w.id === tempSelectedWorkspaceId.value);
+      const subgroupIndex = ws?.subgroups?.findIndex(sub => sub.name === data.value[index].SubGroupId) ?? -1;
+      tempSelectedSubgroupIndex.value = subgroupIndex >= 0 ? subgroupIndex + 1 : 0;
+    }
     else
       tempSelectedSubgroup.value = null;
 
@@ -6558,6 +6636,7 @@ function Scroll_Reached_Bottom() {
     console.log(error.message);
   }
 }
+
 
 let debounceTimeout;
 function debouncedScroll() {
@@ -8542,7 +8621,7 @@ async function RO_ViewNotePage(id) {
       Animate_Visiual_Block_View(Html_String)
     );
     change_text_alignment();
-    
+
     IsRoViewNoteOpen.value = true;
     /*     await new Promise(r => requestAnimationFrame(r)); */
     await new Promise((resolve) => setTimeout(resolve, 450));
@@ -9993,6 +10072,8 @@ onBeforeUnmount(() => {
   clearTimeout(debounceTimeout); // Add timeout cleanup
 
 });
+
+
 
 let SavedOrder = ref();
 let OrderMap = ref();
