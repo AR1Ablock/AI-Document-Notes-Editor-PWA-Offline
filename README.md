@@ -276,8 +276,8 @@ Before running Nexora locally, make sure you have:
 ### Clone the repository
 
 ```bash
-git clone <your-repository-url>
-cd <your-repository-directory>
+git clone https://github.com/AR1Ablock/Nexora-AI-Rich-Notes-Document-Maker.git
+cd Nexora-AI-Rich-Notes-Document-Maker
 ```
 
 ### Install dependencies
