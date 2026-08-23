@@ -310,7 +310,7 @@ Here is the **concise, point‑to‑point** Markdown section for your GitHub REA
 
 ---
 
-```markdown
+
 ## 🔑 Configuration – API Keys
 
 Nexora uses third‑party APIs for AI, speech, and OCR features. Replace the placeholders with your own keys.
@@ -325,10 +325,10 @@ Nexora uses third‑party APIs for AI, speech, and OCR features. Replace the pla
 Sign up at [Mistral AI](https://mistral.ai/) and generate an API key.
 
 **Where to set it:**  
-`src/components/AI_Feature.js` – find this line:
+`.env` – find this in project root:
 
 ```javascript
-export let mistral_api_key = "YOUR_MISTRAL_API_KEY_HERE";
+VITE_MISTRAL_API_KEY = YOUR_MISTRAL_API_KEY_HERE;
 ```
 
 ---
@@ -341,10 +341,10 @@ export let mistral_api_key = "YOUR_MISTRAL_API_KEY_HERE";
 Sign up at [Speechmatics](https://www.speechmatics.com/) and obtain your API key.
 
 **Where to set it:**  
-`src/components/Speech_To_Text.js` and `src/components/Text_To_Speech.js` – find this line in both files:
+`.env` – find this in project root:
 
 ```javascript
-const apiKey = ref('YOUR_SPEECHMATICS_API_KEY_HERE');
+VITE_Speechmatics_API_KEY = YOUR_SPEECHMATICS_API_KEY_HERE;
 ```
 
 ---
@@ -438,10 +438,10 @@ It will look similar to:
 https://your-project.your-subdomain.workers.dev
 ```
 
-`src/components/OCR.js` – find this line:
+`.env` – find this in project root:
 
 ```javascript
-const PROXY_ROOT = "https://your-worker-name.your-subdomain.workers.dev";
+VITE_CLOUDFARE_WRANGLER_PROXY_ROOT = Your_CloudFare_Worker_URL;
 ```
 
 ---
