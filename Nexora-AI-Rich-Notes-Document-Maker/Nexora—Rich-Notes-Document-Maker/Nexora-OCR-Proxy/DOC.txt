@@ -1,0 +1,3 @@
+just deployed to wranger of cloudfare
+
+npm wrangler deploy
