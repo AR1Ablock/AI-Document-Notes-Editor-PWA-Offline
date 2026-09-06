@@ -1,0 +1,21 @@
+{
+    "include": ["src/**/*"],
+    "exclude": ["node_modules" /* dist */],
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        "@/*": ["src/*"]
+      },
+      "allowJs": true,
+      "checkJs": false, /* allow type checking in pure js project */
+      "target": "ES6",
+      "moduleResolution": "node",
+      "lib": [
+        "esnext",
+        "dom",
+        "dom.iterable",
+        "scripthost"
+      ]
+    }
+  }
+  
