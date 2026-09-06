@@ -376,13 +376,12 @@ VITE_CLOUDFARE_WRANGLER_PROXY_ROOT = Your_CloudFare_Worker_URL;
 Sign up at [LlamaIndex Cloud](https://cloud.llamaindex.ai/) and generate an API key.
 
 **Step 1 – Worker Key:**  
-In the Cloudflare Worker script (`Nexora-OCR-Proxy/src/index.js`), find this line:
+In the Cloudflare Worker script (`Nexora-OCR-Proxy/src/index.js`), find this line and paste you api key:
 
 ```javascript
 headers.set("Authorization", "Bearer YOUR_LLAMAINDEX_API_KEY_HERE");
 ```
 
-**Step 2 – Proxy URL:**  
 
 # Deploy Proxy to Cloudflare with Wrangler
 
