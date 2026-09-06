@@ -277,12 +277,13 @@ Before running Nexora locally, make sure you have:
 
 ```bash
 git clone https://github.com/AR1Ablock/Nexora-AI-Rich-Notes-Document-Maker.git
-cd Nexora-AI-Rich-Notes-Document-Maker
+cd Nexora-AI-Rich-Notes-Document-Maker/Nexora-AI-Rich-Notes-Document-Maker
 ```
 
 ### Install dependencies
 
 ```bash
+cd Nexora-Frontend
 npm install
 ```
 
@@ -315,6 +316,8 @@ Here is the **concise, point‑to‑point** Markdown section for your GitHub REA
 
 Nexora uses third‑party APIs for AI, speech, and OCR features. Replace the placeholders with your own keys.
 
+**First Create a `.env` file in the root of `Nexora-Frontend` folder.**
+
 ---
 
 ### 1. Mistral AI (Content Generation)
@@ -325,7 +328,7 @@ Nexora uses third‑party APIs for AI, speech, and OCR features. Replace the pla
 Sign up at [Mistral AI](https://mistral.ai/) and generate an API key.
 
 **Where to set it:**  
-`.env` – find this in project root:
+`.env` – find this in project root, open it and copy paste below variables with your api key:
 
 ```javascript
 VITE_MISTRAL_API_KEY = YOUR_MISTRAL_API_KEY_HERE;
@@ -341,7 +344,7 @@ VITE_MISTRAL_API_KEY = YOUR_MISTRAL_API_KEY_HERE;
 Sign up at [Speechmatics](https://www.speechmatics.com/) and obtain your API key.
 
 **Where to set it:**  
-`.env` – find this in project root:
+`.env` – find this in project root, open it and copy paste below variables with your api key:
 
 ```javascript
 VITE_Speechmatics_API_KEY = YOUR_SPEECHMATICS_API_KEY_HERE;
@@ -357,13 +360,14 @@ VITE_Speechmatics_API_KEY = YOUR_SPEECHMATICS_API_KEY_HERE;
 Sign up at [LlamaIndex Cloud](https://cloud.llamaindex.ai/) and generate an API key.
 
 **Step 1 – Worker Key:**  
-In the Cloudflare Worker script (`index.js`), find this line:
+In the Cloudflare Worker script (`Nexora-OCR-Proxy/src/index.js`), find this line:
 
 ```javascript
 headers.set("Authorization", "Bearer YOUR_LLAMAINDEX_API_KEY_HERE");
 ```
 
 **Step 2 – Proxy URL:**  
+
 # Deploy Proxy to Cloudflare with Wrangler
 
 ## 1. Create a Cloudflare account
@@ -387,6 +391,9 @@ If both commands show version numbers, you are ready.
 
 Open the terminal inside your existing Nexora Wrangler proxy project:
 
+```bash
+cd Nexora-OCR-Proxy
+```
 
 ## 4. Install nexora proxy dependencies
 
@@ -437,8 +444,13 @@ It will look similar to:
 ```text
 https://your-project.your-subdomain.workers.dev
 ```
+after getting url, go to `Nexora-Frontend` folder.
 
-`.env` – find this in project root:
+```bash
+cd Nexora-Frontend
+```
+
+`.env` – find this in project root, open it and copy paste below variables with your copied url:
 
 ```javascript
 VITE_CLOUDFARE_WRANGLER_PROXY_ROOT = Your_CloudFare_Worker_URL;
