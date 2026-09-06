@@ -16,7 +16,7 @@ export default {
 
     // Create new headers object – preserve all original headers and add auth
     const headers = new Headers(request.headers);
-    headers.set("Authorization", "Bearer llx-vPliT861avd0eQWifRK6k0YrbnQefVLhEghrEJ2JrRCl6My7");
+    headers.set("Authorization", "Bearer api key");
 
     // IMPORTANT: remove host header to avoid mismatches (optional but cleaner)
     headers.delete("host");
