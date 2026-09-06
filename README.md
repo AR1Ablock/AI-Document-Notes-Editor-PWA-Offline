@@ -354,10 +354,10 @@ VITE_Speechmatics_API_KEY = YOUR_SPEECHMATICS_API_KEY_HERE;
 
 ### 3. LlamaIndex / OCR Proxy (Cloudflare Worker) URL
 
-**Used for:** Connect LlamaIndex to our proeject.
+**Used for:** Connect LlamaIndex to project.
 
 **Where to get it:**  
-Follow below `Deploy Proxy to Cloudflare with Wrangler` instruction to get wrangler worker for ocr url.
+Follow below `Deploy Proxy to Cloudflare with Wrangler` instruction to get wrangler worker url for ocr.
 
 **Where to set it:**  
 `.env` – find this in project root, open it and copy paste below variables with your api key:
