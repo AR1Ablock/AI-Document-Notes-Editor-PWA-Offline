@@ -352,7 +352,23 @@ VITE_Speechmatics_API_KEY = YOUR_SPEECHMATICS_API_KEY_HERE;
 
 ---
 
-### 3. LlamaIndex / OCR Proxy (Cloudflare Worker)
+### 3. LlamaIndex / OCR Proxy (Cloudflare Worker) URL
+
+**Used for:** Connect LlamaIndex to our proeject.
+
+**Where to get it:**  
+Follow below `Deploy Proxy to Cloudflare with Wrangler` instruction to get wrangler worker for ocr url.
+
+**Where to set it:**  
+`.env` – find this in project root, open it and copy paste below variables with your api key:
+
+```javascript
+VITE_CLOUDFARE_WRANGLER_PROXY_ROOT = Your_CloudFare_Worker_URL;
+```
+
+---
+
+### 4. LlamaIndex / OCR Proxy (Cloudflare Worker) API Key
 
 **Used for:** Extracting text from images and scanned documents via LlamaParse.
 
