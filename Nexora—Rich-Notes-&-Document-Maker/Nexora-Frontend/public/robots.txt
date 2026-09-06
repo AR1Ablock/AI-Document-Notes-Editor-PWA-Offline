@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin/
-
-Sitemap: https://nexora-notes-document-maker.web.app/sitemap.xml
